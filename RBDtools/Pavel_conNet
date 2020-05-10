@@ -1,0 +1,69 @@
+// From https://www.youtube.com/watch?v=38RhntxXcMI
+
+//---------------------
+
+//does something with saving midpos? dunno really. Use in a pointwrangle after constraints have been created and labeled, before import to DopNet.
+
+int vt0 = vertexindex(0, @primnum, 0);
+int vt1 = vertexindex(0, @primnum, 1);
+
+int pt0 = vertexpoint(0, vt0);
+int pt1 = vertexpoint(0, vt1);
+
+vector pos0 = point(0, "P", pt0);
+vector pos1 = point(0, "P", pt1);
+
+vector midPos = (pos0+pos1)*.5;
+
+setpointattrib(0, "P", pt0, midPos);
+setpointattrib(0, "P", pt1, midPos);
+
+//---------------------
+
+// Goes into a pointwrangle inside of the Sopnet-In-Dopnet. Constraint geometry merge goes into the first input and packed geo into the second.
+
+int parIx = findattribval(1, "point", "name", s@name, 0);
+matrix tr = primintrinsic(1, "packedfulltransform", parIx);
+//tr = invert(tr);
+v@P *= tr;
+//v@r = cracktransform(0, 0, 1, {0, 0, 0}, tr)';
+
+//----------------------
+
+// Goes into a pointwrangle inside of the Sopnet-In-Dopnet. The output from the above code goes into the input of this one.
+
+int vt0 = vertexindex(0,@primnum,0);
+int vt1 = vertexindex(0,@primnum,1);
+
+int pt0 = vertexpoint(0,vt0);
+int pt1 = vertexpoint(0,vt1);
+
+vector pos0 = point(0,"P",pt0);
+vector pos1 = point(0,"P",pt1);
+
+vector midPos = (pos0+pos1)*.5;
+
+if(f@force > 10000){
+    setpointattrib(0,"P",pt0,midPos);
+    setpointattrib(0,"P",pt1,midPos);
+}
+
+//-----------
+
+// Goes into a pointwrangle inside of the Sopnet-In-Dopnet. The output from the above code goes into the first input of this one. Note
+that this is the same as snippet number two, but without the third line commented out. The geo merge goes into input number two.
+
+int parIx = findattribval(1,"point","name",s@name,0);
+matrix tr = primintrinsic(1,"packedfulltransform",parIx);
+tr = invert( tr );
+v@P *= tr;
+//v@r=cracktransform(0, 0, 1, { 0, 0, 0 }, tr);
+
+//-----------
+
+//Create a SOPnet inside of the DOPnet and import the bending constraint geometry and the packed collision geometry. In the below example
+//the constraint network is names "conNet_bend" and the collsion geometry (RBDpackedobject) is named "src."
+
+/obj/system/dopnet1:Relationships/conNet_bend/constraintnetwork/Geometry
+
+/obj/system/dopnet1:src/Geometry
